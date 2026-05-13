@@ -1,31 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   FileText, Target, Briefcase, TrendingUp, Brain, Star,
-  Award, ChevronRight, Clock, CheckCircle, AlertCircle, Zap
+  Award, ChevronRight, Clock, CheckCircle, AlertCircle, Zap, MessageSquare
 } from 'lucide-react';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer,
   AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import useAuthStore from '../../store/authStore';
 import api from '../../services/api';
 
-const StatCard = ({ icon: Icon, label, value, sub, color, delay }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay, duration: 0.4 }}
-    className="glass-card rounded-2xl p-5 flex items-center gap-4 hover:border-primary-500/30 transition-all group"
-  >
-    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${color}`}>
-      <Icon className="w-6 h-6 text-white" />
-    </div>
-    <div>
-      <p className="text-2xl font-bold text-white">{value}</p>
-      <p className="text-sm text-slate-400">{label}</p>
-      {sub && <p className="text-xs text-slate-500 mt-0.5">{sub}</p>}
-    </div>
-  </motion.div>
-);
+const StatCard = ({ icon: Icon, label, value, sub, color, delay, path }) => {
+  const navigate = useNavigate();
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.4 }}
+      onClick={() => path && navigate(path)}
+      className={`glass-card rounded-2xl p-5 flex items-center gap-4 transition-all group ${path ? 'cursor-pointer hover:border-primary-500/50 hover:shadow-primary-500/20 hover:shadow-lg' : 'hover:border-primary-500/30'}`}
+    >
+      <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${color}`}>
+        <Icon className="w-6 h-6 text-white" />
+      </div>
+      <div>
+        <p className="text-2xl font-bold text-white">{value}</p>
+        <p className="text-sm text-slate-400">{label}</p>
+        {sub && <p className="text-xs text-slate-500 mt-0.5">{sub}</p>}
+      </div>
+    </motion.div>
+  );
+};
 
 const CircularProgress = ({ value, label, color }) => {
   const radius = 40;
@@ -126,11 +131,40 @@ const StudentDashboard = () => {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={FileText}  label="ATS Score"         value={`${atsScore}%`}   color="bg-blue-500/80"    delay={0.1} />
-        <StatCard icon={Target}    label="Readiness Score"   value={`${readiness}%`}  color="bg-primary-500/80" delay={0.15} />
-        <StatCard icon={Brain}     label="Technical Score"   value={`${techScore}%`}  color="bg-violet-500/80"  delay={0.2} />
-        <StatCard icon={Star}      label="Communication"     value={`${Math.round(commScore)}%`} color="bg-amber-500/80" delay={0.25} />
+        <StatCard icon={FileText}  label="ATS Score"         value={`${atsScore}%`}   color="bg-blue-500/80"    delay={0.1}  path="/student/resume" />
+        <StatCard icon={Target}    label="Readiness Score"   value={`${readiness}%`}  color="bg-primary-500/80" delay={0.15} path="/student/skill-gap" />
+        <StatCard icon={Brain}     label="Technical Score"   value={`${techScore}%`}  color="bg-violet-500/80"  delay={0.2}  path="/student/mock-interview" />
+        <StatCard icon={Star}      label="Communication"     value={`${Math.round(commScore)}%`} color="bg-amber-500/80" delay={0.25} path="/student/mock-interview" />
       </div>
+
+      {/* Quick Actions */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.28 }}
+        className="grid grid-cols-2 lg:grid-cols-5 gap-3"
+      >
+        <Link to="/student/resume" className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-800/40 hover:bg-primary-600/20 border border-slate-700/50 hover:border-primary-500/50 transition-all group">
+          <FileText className="w-6 h-6 text-slate-400 group-hover:text-primary-400 mb-2 transition-colors" />
+          <span className="text-xs font-medium text-slate-300 group-hover:text-white text-center">Analyze Resume</span>
+        </Link>
+        <Link to="/student/mock-interview" className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-800/40 hover:bg-violet-600/20 border border-slate-700/50 hover:border-violet-500/50 transition-all group">
+          <MessageSquare className="w-6 h-6 text-slate-400 group-hover:text-violet-400 mb-2 transition-colors" />
+          <span className="text-xs font-medium text-slate-300 group-hover:text-white text-center">Start Mock Interview</span>
+        </Link>
+        <Link to="/student/analytics" className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-800/40 hover:bg-amber-600/20 border border-slate-700/50 hover:border-amber-500/50 transition-all group">
+          <TrendingUp className="w-6 h-6 text-slate-400 group-hover:text-amber-400 mb-2 transition-colors" />
+          <span className="text-xs font-medium text-slate-300 group-hover:text-white text-center">View Analytics</span>
+        </Link>
+        <Link to="/student/companies" className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-800/40 hover:bg-green-600/20 border border-slate-700/50 hover:border-green-500/50 transition-all group">
+          <Briefcase className="w-6 h-6 text-slate-400 group-hover:text-green-400 mb-2 transition-colors" />
+          <span className="text-xs font-medium text-slate-300 group-hover:text-white text-center">Career Recommendations</span>
+        </Link>
+        <Link to="/student/skill-gap" className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-800/40 hover:bg-rose-600/20 border border-slate-700/50 hover:border-rose-500/50 transition-all group">
+          <Target className="w-6 h-6 text-slate-400 group-hover:text-rose-400 mb-2 transition-colors" />
+          <span className="text-xs font-medium text-slate-300 group-hover:text-white text-center">Skill Gap Analysis</span>
+        </Link>
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Circular Scores */}
@@ -226,9 +260,9 @@ const StudentDashboard = () => {
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-white">Recommended Companies</h2>
-            <a href="/student/companies" className="text-xs text-primary-400 hover:text-primary-300 flex items-center gap-1">
+            <Link to="/student/companies" className="text-xs text-primary-400 hover:text-primary-300 flex items-center gap-1">
               View all <ChevronRight className="w-3 h-3" />
-            </a>
+            </Link>
           </div>
           <div className="space-y-3">
             {(recommendations.length > 0 ? recommendations : [
